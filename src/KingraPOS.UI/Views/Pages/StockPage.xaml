@@ -1,0 +1,170 @@
+<UserControl x:Class="KingraPOS.UI.Views.Pages.StockPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d"
+             Loaded="OnLoaded">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <TextBlock Text="Stok" FontSize="24" FontWeight="SemiBold" Margin="0,4,0,16" />
+
+            <Grid Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ui:TextBox Grid.Column="0"
+                            PlaceholderText="Cari nama atau SKU..."
+                            Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}"
+                            Margin="0,0,12,0" />
+                <ui:Button Grid.Column="1" Content="Muat Ulang" Appearance="Primary"
+                           Command="{Binding ReloadCommand}" Margin="0,0,12,0" />
+                <CheckBox Grid.Column="2" Content="Hanya stok menipis" IsChecked="{Binding LowStockOnly}" />
+            </Grid>
+
+            <DataGrid ItemsSource="{Binding Inventories}"
+                      SelectedItem="{Binding SelectedInventory}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="Horizontal"
+                      MaxHeight="220">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="120" />
+                    <DataGridTextColumn Header="Produk" Binding="{Binding ProductName}" Width="*" />
+                    <DataGridTextColumn Header="Satuan" Binding="{Binding BaseUnitName}" Width="90" />
+                    <DataGridTextColumn Header="Stok (x1000)" Binding="{Binding StockQuantity}" Width="110" />
+                    <DataGridTextColumn Header="Rusak (x1000)" Binding="{Binding RejectQuantity}" Width="110" />
+                    <DataGridCheckBoxColumn Header="Menipis" Binding="{Binding IsLowStock}" Width="80" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <ui:Card Padding="20" Margin="0,12,0,0" IsEnabled="{Binding CanUpdate}">
+                <StackPanel>
+                    <TextBlock Text="Update Stok" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                    <TextBlock Text="{Binding SelectedInventory.ProductName, StringFormat='Produk: {0}'}" Opacity="0.7" Margin="0,0,0,12" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Alasan" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Satuan" Margin="12,0,0,0" />
+
+                        <ComboBox Grid.Row="1" Grid.Column="0"
+                                  ItemsSource="{Binding Kinds}"
+                                  SelectedItem="{Binding SelectedKind}"
+                                  DisplayMemberPath="Name"
+                                  Margin="0,4,12,12" />
+                        <ComboBox Grid.Row="1" Grid.Column="1"
+                                  ItemsSource="{Binding Units}"
+                                  SelectedItem="{Binding SelectedUnit}"
+                                  DisplayMemberPath="UnitName"
+                                  Margin="0,4,0,12" />
+                    </Grid>
+
+                    <TextBlock Text="{Binding QuantityHint}" Opacity="0.6" FontSize="12" Margin="0,0,0,8" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Jumlah" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Harga beli per satuan (opsional)" Margin="12,0,0,0" />
+
+                        <ui:TextBox Grid.Row="1" Grid.Column="0"
+                                    Text="{Binding Quantity}"
+                                    Margin="0,4,12,12" />
+                        <ui:TextBox Grid.Row="1" Grid.Column="1"
+                                    Text="{Binding CostPrice}"
+                                    Margin="0,4,0,12" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Supplier (opsional)" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Nomor nota (opsional)" Margin="12,0,0,0" />
+
+                        <ComboBox Grid.Row="1" Grid.Column="0"
+                                  ItemsSource="{Binding Suppliers}"
+                                  SelectedItem="{Binding SelectedSupplier}"
+                                  DisplayMemberPath="Name"
+                                  Margin="0,4,12,12" />
+                        <ui:TextBox Grid.Row="1" Grid.Column="1"
+                                    Text="{Binding ReferenceNumber}"
+                                    Margin="0,4,0,12" />
+                    </Grid>
+
+                    <TextBlock Text="Catatan" />
+                    <ui:TextBox Text="{Binding Notes}" Margin="0,4,0,12" />
+
+                    <StackPanel Orientation="Horizontal">
+                        <ui:Button Content="Simpan Penyesuaian" Appearance="Primary"
+                                   Command="{Binding SaveAdjustmentCommand}" Margin="0,0,12,0" />
+                        <ui:TextBox Text="{Binding LowStockThreshold}" Width="120" Margin="0,0,12,0" />
+                        <ui:Button Content="Simpan Ambang Stok" Command="{Binding SaveThresholdCommand}" />
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding Message}"
+                               TextWrapping="Wrap"
+                               Foreground="#E0A030"
+                               Margin="0,12,0,0" />
+                    <TextBlock Text="{Binding ThresholdMessage}"
+                               TextWrapping="Wrap"
+                               Foreground="#E0A030" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="20" Margin="0,12,0,0" IsEnabled="{Binding CanViewHistory}">
+                <StackPanel>
+                    <TextBlock Text="Riwayat Mutasi Stok" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                    <DataGrid ItemsSource="{Binding Mutations}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              MaxHeight="260">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Waktu" Binding="{Binding CreatedAt, StringFormat='dd MMM yyyy HH:mm'}" Width="150" />
+                            <DataGridTextColumn Header="Produk" Binding="{Binding ProductName}" Width="*" />
+                            <DataGridTextColumn Header="Jenis" Binding="{Binding MutationType}" Width="120" />
+                            <DataGridTextColumn Header="Bucket" Binding="{Binding StockBucket}" Width="100" />
+                            <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="90" />
+                            <DataGridTextColumn Header="Sebelum" Binding="{Binding StockBefore}" Width="90" />
+                            <DataGridTextColumn Header="Sesudah" Binding="{Binding StockAfter}" Width="90" />
+                            <DataGridTextColumn Header="Oleh" Binding="{Binding UserName}" Width="140" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </ui:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

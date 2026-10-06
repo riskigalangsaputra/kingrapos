@@ -1,0 +1,247 @@
+<UserControl x:Class="KingraPOS.UI.Views.Pages.ProductsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d"
+             Loaded="OnLoaded">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <TextBlock Text="Produk" FontSize="24" FontWeight="SemiBold" Margin="0,4,0,16" />
+
+            <Grid Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ui:TextBox Grid.Column="0"
+                            PlaceholderText="Cari nama, SKU, atau barcode..."
+                            Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}"
+                            Margin="0,0,12,0" />
+                <ui:Button Grid.Column="1" Content="Cari" Appearance="Primary" Command="{Binding SearchCommand}" Margin="0,0,12,0" />
+                <ui:Button Grid.Column="2" Content="Produk Baru" Command="{Binding NewCommand}" />
+            </Grid>
+
+            <DataGrid ItemsSource="{Binding Products}"
+                      SelectedItem="{Binding SelectedProduct}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="Horizontal"
+                      MaxHeight="200">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="130" />
+                    <DataGridTextColumn Header="Nama" Binding="{Binding Name}" Width="*" />
+                    <DataGridTextColumn Header="Kategori" Binding="{Binding CategoryName}" Width="140" />
+                    <DataGridTextColumn Header="Satuan Dasar" Binding="{Binding BaseUnitName}" Width="120" />
+                    <DataGridCheckBoxColumn Header="Aktif" Binding="{Binding IsActive}" Width="70" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <ui:Card Padding="20" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="Data Produk" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="SKU *" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Nama produk *" Margin="12,0,0,0" />
+
+                        <ui:TextBox Grid.Row="1" Grid.Column="0"
+                                    Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}"
+                                    Margin="0,4,12,12" />
+                        <ui:TextBox Grid.Row="1" Grid.Column="1"
+                                    Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                    Margin="0,4,0,12" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Kategori" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Satuan dasar (saat baru)" Margin="12,0,0,0" />
+
+                        <ComboBox Grid.Row="1" Grid.Column="0"
+                                  ItemsSource="{Binding Categories}"
+                                  SelectedItem="{Binding SelectedCategory}"
+                                  DisplayMemberPath="Name"
+                                  Margin="0,4,12,12" />
+                        <ComboBox Grid.Row="1" Grid.Column="1"
+                                  ItemsSource="{Binding Units}"
+                                  SelectedItem="{Binding BaseUnit}"
+                                  DisplayMemberPath="Name"
+                                  Margin="0,4,0,12" />
+                    </Grid>
+
+                    <TextBlock Text="Keterangan" />
+                    <ui:TextBox Text="{Binding Description}" AcceptsReturn="True" TextWrapping="Wrap" Height="50" Margin="0,4,0,12" />
+
+                    <StackPanel Visibility="{Binding CanViewCostPrice, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="HPP per satuan dasar (opsional)" />
+                        <ui:TextBox Text="{Binding BaseCostPrice}" Margin="0,4,0,12" />
+                    </StackPanel>
+
+                    <TextBlock Text="Biaya jasa default (opsional)" />
+                    <ui:TextBox Text="{Binding DefaultServiceFee}" Margin="0,4,0,12" />
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <CheckBox Content="Lacak stok" IsChecked="{Binding TrackStock}" Margin="0,0,24,0" />
+                        <CheckBox Content="Aktif" IsChecked="{Binding IsActive}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <ui:Button Content="Simpan" Appearance="Primary" Command="{Binding SaveCommand}" Margin="0,0,12,0" />
+                        <ui:Button Content="Hapus" Appearance="Danger" Command="{Binding DeleteCommand}" IsEnabled="{Binding CanDelete}" />
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding Message}"
+                               TextWrapping="Wrap"
+                               Foreground="#E0A030"
+                               Margin="0,12,0,0" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="20" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="Satuan Jual &amp; Harga" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                    <DataGrid ItemsSource="{Binding Detail.Units}"
+                              SelectedItem="{Binding SelectedUnit}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              MaxHeight="180">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Satuan" Binding="{Binding UnitName}" Width="120" />
+                            <DataGridTextColumn Header="Barcode" Binding="{Binding Barcode}" Width="140" />
+                            <DataGridTextColumn Header="Konversi (x1000)" Binding="{Binding ConversionFactor}" Width="130" />
+                            <DataGridCheckBoxColumn Header="Dasar" Binding="{Binding IsBaseUnit}" Width="70" />
+                            <DataGridTextColumn Header="Harga Jual" Binding="{Binding SellingPrice, StringFormat='Rp {0:N0}'}" Width="130" />
+                            <DataGridCheckBoxColumn Header="Badge Tren" Binding="{Binding ShowTrendBadge}" Width="100" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ui:TextBox Grid.Column="0"
+                                    Text="{Binding UnitPrice}"
+                                    Margin="0,0,12,0"
+                                    IsEnabled="{Binding CanManagePrice}" />
+                        <ui:Button Grid.Column="1" Content="Simpan Harga" Appearance="Primary"
+                                   Command="{Binding SavePriceCommand}" Margin="0,0,12,0"
+                                   IsEnabled="{Binding CanManagePrice}" />
+                        <ui:Button Grid.Column="2" Content="Hapus Satuan"
+                                   Command="{Binding RemoveUnitCommand}"
+                                   IsEnabled="{Binding CanUpdate}" />
+                    </Grid>
+
+                    <TextBlock Text="Tambah satuan jual" FontWeight="SemiBold" Margin="0,16,0,8" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox Grid.Column="0" ItemsSource="{Binding Units}" SelectedItem="{Binding NewUnit}"
+                                  DisplayMemberPath="Name" Margin="0,0,12,0" />
+                        <ui:TextBox Grid.Column="1" Text="{Binding NewUnitBarcode}"
+                                    PlaceholderText="Barcode (opsional)" Margin="0,0,12,0" />
+                        <ui:TextBox Grid.Column="2" Text="{Binding NewUnitConversionFactor}"
+                                    PlaceholderText="Konversi (mis. 12000)" Margin="0,0,12,0" />
+                        <ui:Button Grid.Column="3" Content="Tambah" Command="{Binding AddUnitCommand}"
+                                   IsEnabled="{Binding CanUpdate}" />
+                    </Grid>
+
+                    <TextBlock Text="Harga bertingkat" FontWeight="SemiBold" Margin="0,16,0,8" />
+
+                    <DataGrid ItemsSource="{Binding Tiers}"
+                              SelectedItem="{Binding SelectedTier}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="False"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              MaxHeight="160"
+                              IsEnabled="{Binding CanManagePrice}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nama Tier" Binding="{Binding TierName}" Width="*" />
+                            <DataGridTextColumn Header="Minimum Qty (x1000)" Binding="{Binding MinimumQuantity}" Width="170" />
+                            <DataGridTextColumn Header="Harga Tier" Binding="{Binding TierPrice}" Width="140" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <ui:Button Content="Tambah Tier" Command="{Binding AddTierCommand}" Margin="0,0,12,0"
+                                   IsEnabled="{Binding CanManagePrice}" />
+                        <ui:Button Content="Hapus Tier" Command="{Binding RemoveTierCommand}" Margin="0,0,12,0"
+                                   IsEnabled="{Binding CanManagePrice}" />
+                        <ui:Button Content="Simpan Tier" Appearance="Primary" Command="{Binding SaveTiersCommand}"
+                                   IsEnabled="{Binding CanManagePrice}" />
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding UnitMessage}"
+                               TextWrapping="Wrap"
+                               Foreground="#E0A030"
+                               Margin="0,12,0,0" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="20" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="Riwayat Perubahan Harga" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                    <DataGrid ItemsSource="{Binding PriceHistory}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              MaxHeight="180">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Waktu" Binding="{Binding CreatedAt, StringFormat='dd MMM yyyy HH:mm'}" Width="150" />
+                            <DataGridTextColumn Header="Jenis" Binding="{Binding PriceType}" Width="110" />
+                            <DataGridTextColumn Header="Harga Lama" Binding="{Binding OldPrice, StringFormat='Rp {0:N0}'}" Width="130" />
+                            <DataGridTextColumn Header="Harga Baru" Binding="{Binding NewPrice, StringFormat='Rp {0:N0}'}" Width="130" />
+                            <DataGridTextColumn Header="Oleh" Binding="{Binding UserName}" Width="140" />
+                            <DataGridTextColumn Header="Catatan" Binding="{Binding Notes}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </ui:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

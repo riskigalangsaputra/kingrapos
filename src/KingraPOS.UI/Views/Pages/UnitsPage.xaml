@@ -1,0 +1,60 @@
+<UserControl x:Class="KingraPOS.UI.Views.Pages.UnitsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d"
+             Loaded="OnLoaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Satuan" FontSize="24" FontWeight="SemiBold" Margin="0,4,0,16" />
+
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Items}"
+                  SelectedItem="{Binding Selected}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nama" Binding="{Binding Name}" Width="160" />
+                <DataGridTextColumn Header="Keterangan" Binding="{Binding Description}" Width="*" />
+                <DataGridCheckBoxColumn Header="Boleh Desimal" Binding="{Binding AllowDecimal}" Width="120" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <ui:Card Grid.Row="2" Padding="20" Margin="0,12,0,0" IsEnabled="{Binding CanManage}">
+            <StackPanel>
+                <TextBlock Text="Tambah / Ubah Satuan" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                <TextBlock Text="Nama satuan" />
+                <ui:TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+
+                <TextBlock Text="Keterangan" />
+                <ui:TextBox Text="{Binding Description}" Margin="0,4,0,12" />
+
+                <CheckBox Content="Boleh kuantitas desimal (mis. Kg, Liter, Meter)"
+                          IsChecked="{Binding AllowDecimal}"
+                          Margin="0,0,0,12" />
+
+                <StackPanel Orientation="Horizontal">
+                    <ui:Button Content="Baru" Command="{Binding NewCommand}" Margin="0,0,12,0" />
+                    <ui:Button Content="Simpan" Appearance="Primary" Command="{Binding SaveCommand}" Margin="0,0,12,0" />
+                    <ui:Button Content="Hapus" Appearance="Danger" Command="{Binding DeleteCommand}" />
+                </StackPanel>
+
+                <TextBlock Text="{Binding Message}"
+                           TextWrapping="Wrap"
+                           Foreground="#E0A030"
+                           Margin="0,12,0,0" />
+            </StackPanel>
+        </ui:Card>
+    </Grid>
+</UserControl>

@@ -42,6 +42,8 @@ public partial class App : System.Windows.Application
                 database.TableCount,
                 database.Created);
 
+            await RefreshProductBadgesAsync();
+
             await RunStartupFlowAsync();
         }
         catch (Exception exception)
@@ -118,6 +120,12 @@ public partial class App : System.Windows.Application
         builder.Services.AddTransient<LicenseViewModel>();
         builder.Services.AddTransient<BackupViewModel>();
         builder.Services.AddTransient<PermissionsViewModel>();
+        builder.Services.AddTransient<CategoriesViewModel>();
+        builder.Services.AddTransient<UnitsViewModel>();
+        builder.Services.AddTransient<SuppliersViewModel>();
+        builder.Services.AddTransient<ProductsViewModel>();
+        builder.Services.AddTransient<StockViewModel>();
+        builder.Services.AddTransient<RejectsViewModel>();
 
         builder.Services.AddTransient<SetupWindow>();
         builder.Services.AddTransient<LoginWindow>();
@@ -127,6 +135,30 @@ public partial class App : System.Windows.Application
         builder.Services.AddTransient<LicensePage>();
         builder.Services.AddTransient<BackupPage>();
         builder.Services.AddTransient<PermissionsPage>();
+        builder.Services.AddTransient<CategoriesPage>();
+        builder.Services.AddTransient<UnitsPage>();
+        builder.Services.AddTransient<SuppliersPage>();
+        builder.Services.AddTransient<ProductsPage>();
+        builder.Services.AddTransient<StockPage>();
+        builder.Services.AddTransient<RejectsPage>();
+    }
+
+    private async Task RefreshProductBadgesAsync()
+    {
+        try
+        {
+            var cleared = await _host!.Services
+                .GetRequiredService<IProductService>()
+                .RefreshNewProductBadgesAsync();
+
+            if (cleared > 0)
+                Log.Information("Penanda produk baru dibersihkan untuk {Count} produk.", cleared);
+        }
+        catch (Exception exception)
+        {
+            // perawatan penanda tidak boleh menggagalkan startup
+            Log.Warning(exception, "Gagal memperbarui penanda produk.");
+        }
     }
 
     private async Task RunStartupFlowAsync()
