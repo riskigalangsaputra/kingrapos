@@ -3,13 +3,16 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="WPF-UI" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KingraPOS.Application\KingraPOS.Application.csproj" />
+    <ProjectReference Include="..\KingraPOS.Infrastructure\KingraPOS.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

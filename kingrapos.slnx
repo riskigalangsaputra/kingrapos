@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="kingrapos.csproj" />
+  <Project Path="src/KingraPOS.Domain/KingraPOS.Domain.csproj" />
+  <Project Path="src/KingraPOS.Application/KingraPOS.Application.csproj" />
+  <Project Path="src/KingraPOS.Infrastructure/KingraPOS.Infrastructure.csproj" />
+  <Project Path="src/KingraPOS.UI/KingraPOS.UI.csproj" />
 </Solution>

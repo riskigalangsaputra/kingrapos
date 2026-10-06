@@ -1,6 +1,6 @@
-﻿using Wpf.Ui.Controls;
+using Wpf.Ui.Controls;
 
-namespace kingrapos;
+namespace KingraPOS.UI.Views;
 
 public partial class MainWindow : FluentWindow
 {
