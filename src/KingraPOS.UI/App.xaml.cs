@@ -1,8 +1,5 @@
-﻿using System.Windows;
-using KingraPOS.Application.Abstractions;
-using KingraPOS.Application.Services;
+using System.Windows;
 using KingraPOS.Infrastructure.Persistence;
-using KingraPOS.Infrastructure.Repositories;
 using KingraPOS.UI.ViewModels;
 using KingraPOS.UI.Views;
 using Wpf.Ui.Appearance;
@@ -17,24 +14,23 @@ public partial class App : System.Windows.Application
 
         ApplicationThemeManager.Apply(ApplicationTheme.Dark);
 
-        var dataStore = new InMemoryDataStore();
+        var databasePath = KingraPosDatabase.GetDatabasePath();
+        var database = InitializeDatabase(databasePath);
 
-        var categoryRepository = new InMemoryCategoryRepository(dataStore);
-        var productRepository = new InMemoryProductRepository(dataStore);
-        var saleRepository = new InMemorySaleRepository(dataStore);
-
-        IProductService productService = new ProductService(productRepository, categoryRepository);
-        ISaleService saleService = new SaleService(saleRepository, productRepository);
-
-        var mainViewModel = new MainViewModel(productService, saleService);
         var mainWindow = new MainWindow
         {
-            DataContext = mainViewModel
+            DataContext = new MainViewModel(database)
         };
 
         MainWindow = mainWindow;
         mainWindow.Show();
+    }
 
-        _ = mainViewModel.InitializeAsync();
+    private static DatabaseInitializationResult InitializeDatabase(string databasePath)
+    {
+        using var context = KingraPosDatabase.CreateContext(databasePath);
+        var initializer = new DatabaseInitializer(context, databasePath);
+
+        return initializer.Ensure();
     }
 }

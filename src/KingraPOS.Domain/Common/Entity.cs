@@ -2,5 +2,5 @@ namespace KingraPOS.Domain.Common;
 
 public abstract class Entity
 {
-    public Guid Id { get; protected set; } = Guid.NewGuid();
+    public string Id { get; set; } = Guid.NewGuid().ToString("d");
 }

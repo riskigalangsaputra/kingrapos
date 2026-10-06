@@ -4,26 +4,31 @@ namespace KingraPOS.Domain.Entities;
 
 public class Product : Entity
 {
+    public string? CategoryId { get; set; }
+
+    public string BaseUnitId { get; set; } = string.Empty;
+
     public string Sku { get; set; } = string.Empty;
 
     public string Name { get; set; } = string.Empty;
 
-    public Guid CategoryId { get; set; }
+    public string? Description { get; set; }
 
-    public decimal Price { get; set; }
+    public string? ImagePath { get; set; }
 
-    public int Stock { get; set; }
+    public long BaseCostPrice { get; set; }
 
-    public bool HasStock(int quantity) => quantity > 0 && Stock >= quantity;
+    public long? DefaultServiceFee { get; set; }
 
-    public void ReduceStock(int quantity)
-    {
-        if (quantity <= 0)
-            throw new ArgumentOutOfRangeException(nameof(quantity), "Jumlah harus lebih dari nol.");
+    public bool TrackStock { get; set; } = true;
 
-        if (!HasStock(quantity))
-            throw new InvalidOperationException($"Stok produk '{Name}' tidak mencukupi.");
+    public bool IsNewProduct { get; set; } = true;
 
-        Stock -= quantity;
-    }
+    public bool IsActive { get; set; } = true;
+
+    public DateTimeOffset CreatedAt { get; set; }
+
+    public DateTimeOffset UpdatedAt { get; set; }
+
+    public DateTimeOffset? DeletedAt { get; set; }
 }
