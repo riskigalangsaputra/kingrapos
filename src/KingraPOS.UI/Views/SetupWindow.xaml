@@ -1,0 +1,138 @@
+<ui:FluentWindow x:Class="KingraPOS.UI.Views.SetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        mc:Ignorable="d"
+        Title="Setup Awal — Kingra POS"
+        Width="720" Height="780"
+        MinWidth="640" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
+        WindowCornerPreference="Round">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="Setup Awal KingraPOS" />
+
+        <ScrollViewer Grid.Row="1" Padding="24,12,24,0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="Setup Awal"
+                           FontSize="24"
+                           FontWeight="SemiBold" />
+
+                <TextBlock Text="Lengkapi data usaha, pengaturan dasar, dan akun pemilik. Data ini dapat diubah lagi nanti."
+                           Opacity="0.7"
+                           TextWrapping="Wrap"
+                           Margin="0,4,0,20" />
+
+                <ui:Card Padding="20" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Identitas Usaha" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                        <TextBlock Text="Nama usaha *" />
+                        <ui:TextBox Text="{Binding BusinessName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+
+                        <TextBlock Text="Nama pemilik *" />
+                        <ui:TextBox Text="{Binding OwnerName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+
+                        <TextBlock Text="Nomor telepon" />
+                        <ui:TextBox Text="{Binding PhoneNumber}" Margin="0,4,0,12" />
+
+                        <TextBlock Text="Alamat" />
+                        <ui:TextBox Text="{Binding Address}"
+                                    AcceptsReturn="True"
+                                    TextWrapping="Wrap"
+                                    Height="60"
+                                    Margin="0,4,0,12" />
+
+                        <TextBlock Text="NPWP (opsional)" />
+                        <ui:TextBox Text="{Binding TaxNumber}" Margin="0,4,0,12" />
+
+                        <TextBlock Text="Footer struk" />
+                        <ui:TextBox Text="{Binding ReceiptFooter}" Margin="0,4,0,0" />
+                    </StackPanel>
+                </ui:Card>
+
+                <ui:Card Padding="20" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Pengaturan Dasar" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                        <CheckBox Content="Aktifkan pajak / PPN" IsChecked="{Binding TaxEnabled}" Margin="0,0,0,12" />
+
+                        <TextBlock Text="Nama pajak" />
+                        <ui:TextBox Text="{Binding TaxName}" Margin="0,4,0,12" />
+
+                        <TextBlock Text="Tarif pajak (persen)" />
+                        <ui:TextBox Text="{Binding TaxRate}" Margin="0,4,0,12" />
+
+                        <CheckBox Content="Harga jual sudah termasuk pajak" IsChecked="{Binding TaxInclusive}" Margin="0,0,0,12" />
+
+                        <CheckBox Content="Aktifkan fitur jasa" IsChecked="{Binding ServiceFeeEnabled}" Margin="0,0,0,12" />
+
+                        <TextBlock Text="Pembulatan kas (rupiah, 0 = tanpa pembulatan)" />
+                        <ui:TextBox Text="{Binding CashRounding}" Margin="0,4,0,12" />
+
+                        <TextBlock Text="Prefix nomor invoice" />
+                        <ui:TextBox Text="{Binding InvoicePrefix}" Margin="0,4,0,12" />
+
+                        <TextBlock Text="Zona waktu usaha" />
+                        <ComboBox ItemsSource="{Binding Timezones}"
+                                  SelectedItem="{Binding SelectedTimezone}"
+                                  DisplayMemberPath="DisplayName"
+                                  Margin="0,4,0,0" />
+                    </StackPanel>
+                </ui:Card>
+
+                <ui:Card Padding="20" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Akun Pemilik (Owner)" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                        <TextBlock Text="Nama lengkap *" />
+                        <ui:TextBox Text="{Binding OwnerFullName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+
+                        <TextBlock Text="Username *" />
+                        <ui:TextBox Text="{Binding OwnerUsername, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+
+                        <TextBlock Text="Password * (minimal 8 karakter)" />
+                        <PasswordBox x:Name="PasswordInput"
+                                     PasswordChanged="OnPasswordChanged"
+                                     Margin="0,4,0,12" />
+
+                        <TextBlock Text="Ulangi password *" />
+                        <PasswordBox x:Name="PasswordConfirmationInput"
+                                     PasswordChanged="OnPasswordChanged"
+                                     Margin="0,4,0,0" />
+                    </StackPanel>
+                </ui:Card>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Grid Grid.Row="2" Margin="24,12,24,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Text="{Binding ErrorMessage}"
+                       Foreground="#FF7B7B"
+                       TextWrapping="Wrap"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0" />
+
+            <ui:Button Grid.Column="1"
+                       Content="Simpan dan Lanjut"
+                       Appearance="Primary"
+                       Padding="20,10"
+                       Command="{Binding SaveCommand}"
+                       IsEnabled="{Binding CanSubmit}" />
+        </Grid>
+    </Grid>
+</ui:FluentWindow>

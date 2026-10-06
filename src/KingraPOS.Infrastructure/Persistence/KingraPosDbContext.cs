@@ -1,3 +1,4 @@
+using KingraPOS.Application.Abstractions.Persistence;
 using KingraPOS.Domain.Entities;
 using KingraPOS.Domain.Enums;
 using KingraPOS.Infrastructure.Persistence.Converters;
@@ -5,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KingraPOS.Infrastructure.Persistence;
 
-public class KingraPosDbContext : DbContext
+public partial class KingraPosDbContext : DbContext, IKingraPosDbContext
 {
     private const string SqliteNow = "strftime('%Y-%m-%dT%H:%M:%fZ', 'now')";
 
@@ -170,6 +171,7 @@ public class KingraPosDbContext : DbContext
         modelBuilder.Entity<RestoreLog>().ToTable("restore_logs");
 
         ApplySqliteColumnConventions(modelBuilder);
+        ConfigureRelationships(modelBuilder);
     }
 
     private static void ApplySqliteColumnConventions(ModelBuilder modelBuilder)

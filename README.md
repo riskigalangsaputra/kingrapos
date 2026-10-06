@@ -1,6 +1,6 @@
 # KingraPOS
 
-Aplikasi Point of Sale (POS) berbasis **.NET 8** dan **WPF**, dengan library UI **WPF-UI** (lepo.co) dan database lokal **SQLite** melalui **EF Core**.
+Aplikasi Point of Sale (POS) berbasis **.NET 8** dan **WPF**, dengan library UI **WPF-UI** (lepo.co) dan database lokal **SQLite** melalui **EF Core**. Produk dan aturan bisnisnya dijelaskan di [`docs/PRD.md`](docs/PRD.md).
 
 ## Arsitektur
 
@@ -15,9 +15,10 @@ UI  ──▶  Application  ──▶  Domain
 | Project | Tanggung jawab | Referensi |
 |---|---|---|
 | `KingraPOS.Domain` | Entitas, enum (model murni, tanpa dependency) | — |
-| `KingraPOS.Application` | Business logic / use case (belum diisi) | Domain |
-| `KingraPOS.Infrastructure` | EF Core + SQLite, `DbContext`, skema & konfigurasi database | Domain, Application |
-| `KingraPOS.UI` | WPF — Views, ViewModels, composition root | Application, Infrastructure |
+| `KingraPOS.Application` | Business logic / use case: setup, auth, RBAC, manajemen user | Domain |
+| `KingraPOS.Infrastructure` | EF Core + SQLite, `DbContext`, skema, PBKDF2 hasher | Domain, Application |
+| `KingraPOS.UI` | WPF — Views, ViewModels, host/DI, composition root | Application, Infrastructure |
+| `tests/KingraPOS.Tests` | Uji xUnit (setup, auth, RBAC, hashing) | Application, Infrastructure |
 
 > Project UI dinamai `KingraPOS.UI` (bukan `*.Wpf`) karena namespace berakhiran `.Wpf` bentrok dengan namespace `Wpf.Ui.Controls` milik WPF-UI saat kompilasi XAML.
 
@@ -26,21 +27,24 @@ UI  ──▶  Application  ──▶  Domain
 ```
 src/
 ├─ KingraPOS.Domain/
-│  ├─ Common/                 Entity (base, Id UUID string)
-│  ├─ Entities/               38 entity sesuai skema
-│  └─ Enums/                  enum untuk kolom TEXT ber-CHECK
-├─ KingraPOS.Application/     (kosong — business logic menyusul)
+│  ├─ Common/                     Entity (base, Id UUID string)
+│  ├─ Entities/                   38 entity sesuai skema
+│  └─ Enums/                      enum untuk kolom TEXT ber-CHECK
+├─ KingraPOS.Application/
+│  ├─ Abstractions/               kontrak persistence & service
+│  ├─ Dtos/  Security/  Validation/  Services/
+│  └─ DependencyInjection/        AddApplication()
 ├─ KingraPOS.Infrastructure/
-│  └─ Persistence/
-│     ├─ KingraPosDbContext.cs        pemetaan 38 tabel (snake_case)
-│     ├─ KingraPosDatabase.cs         path & connection string
-│     ├─ DatabaseInitializer.cs       menjalankan skema saat DB belum ada
-│     ├─ Converters/                  konverter DateTimeOffset → ISO-8601 UTC
-│     └─ Scripts/triggers.sql         trigger updated_at
-└─ KingraPOS.UI/
-   ├─ Common/                 ObservableObject, RelayCommand
-   ├─ ViewModels/             MainViewModel
-   └─ Views/                  MainWindow
+│  ├─ Persistence/                DbContext, initializer, konverter, skrip
+│  ├─ Security/                   Pbkdf2PasswordHasher
+│  └─ DependencyInjection/        AddInfrastructure()
+├─ KingraPOS.UI/
+│  ├─ App.xaml(.cs)               host + DI + Serilog + alur startup
+│  ├─ Services/                   session, navigasi
+│  ├─ ViewModels/                 setup, login, shell, halaman
+│  ├─ Views/                      SetupWindow, LoginWindow, shell + halaman
+│  └─ appsettings.json            konfigurasi Serilog
+└─ tests/KingraPOS.Tests/         uji xUnit
 ```
 
 ## Database (SQL-first)
@@ -51,6 +55,7 @@ File **`skema_kasir_final_offline.sql`** di root repo adalah **sumber kebenaran*
 - Versi skema dilacak lewat `PRAGMA user_version` (sekarang **1**); initializer idempoten.
 - `PRAGMA journal_mode = WAL`, `foreign_keys = ON`, `busy_timeout = 5000` di-set setiap koneksi.
 - Bagian trigger (`-- @@TRIGGERS@@`) pada file skema masih placeholder, sehingga trigger `updated_at` di-generate di `Scripts/triggers.sql` (27 tabel).
+- Relasi FK dimodelkan eksplisit (tanpa navigation property) agar EF tahu urutan insert dan graf relasi.
 
 ### Konvensi pemetaan
 
@@ -66,14 +71,24 @@ File **`skema_kasir_final_offline.sql`** di root repo adalah **sumber kebenaran*
 | `TEXT` enum ber-CHECK | `enum` C# (nama anggota = nilai DB) |
 | nama tabel/kolom | `snake_case` |
 
-## Menjalankan
+## Autentikasi & Hak Akses
+
+- Password & PIN di-hash **PBKDF2-SHA256** (210.000 iterasi, salt acak 16 byte); format `pbkdf2$sha256$<iterasi>$<salt>$<hash>`.
+- Izin efektif = `role_permissions` ∪ `user_permissions(is_granted=1)` − `user_permissions(is_granted=0)`, di-cache di session saat login.
+- Tiga role sistem dibuat saat setup: **Owner** (semua izin), **Admin** (semua kecuali `settings.license`, `settings.restore`, `role.manage`), **Kasir** (transaksi, shift, stok dasar — tanpa HPP, ubah harga, void, dan pengaturan).
+- Aksi sensitif diperiksa izinnya di layer Application (mis. membuat user butuh `user.manage`).
+- Log diagnostik ke `%LOCALAPPDATA%\KingraPOS\logs`; audit aksi bisnis ke tabel `activity_logs`.
+
+## Menjalankan & Menguji
 
 ```powershell
 dotnet run --project src/KingraPOS.UI/KingraPOS.UI.csproj
+dotnet test kingrapos.slnx
 ```
+
+Saat pertama dijalankan dan `business_profile` masih kosong, aplikasi menampilkan **Setup Awal**, lalu **Login**, lalu shell utama.
 
 ## Catatan
 
-- UI dan business logic belum diimplementasikan; layer `Application` sengaja dikosongkan.
-- Repository per-agregate belum dibuat — `DbContext` adalah akses data untuk saat ini.
-- Dependency injection masih manual di `App.xaml.cs` (composition root) dan dapat diganti ke DI container tanpa menyentuh layer lain.
+- Repository per-agregate belum dibuat — `Application` memakai abstraksi `IKingraPosDbContext` (+ factory).
+- Lisensi, backup/restore, dan editor role/permission belum dikerjakan (lanjutan Fase 1).

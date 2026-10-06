@@ -6,8 +6,8 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
         Title="Kingra POS"
-        Width="900" Height="560"
-        MinWidth="720" MinHeight="480"
+        Width="1120" Height="720"
+        MinWidth="880" MinHeight="560"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
@@ -20,31 +20,37 @@
 
         <ui:TitleBar Grid.Row="0" Title="Kingra POS" />
 
-        <StackPanel Grid.Row="1" Margin="28,12,28,28">
-            <TextBlock Text="KingraPOS"
-                       FontSize="28"
-                       FontWeight="SemiBold"
-                       Margin="0,4,0,8" />
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="248" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Struktur project dan layer database sudah siap. UI serta business logic belum diimplementasikan."
-                       Opacity="0.7"
-                       TextWrapping="Wrap"
-                       Margin="0,0,0,24" />
+            <DockPanel Grid.Column="0" Margin="8,0,8,8">
+                <Border DockPanel.Dock="Bottom" Padding="12,8" Margin="0,8,0,0">
+                    <StackPanel>
+                        <TextBlock Text="{Binding UserDisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding RoleDisplayName}" Opacity="0.7" FontSize="12" />
+                    </StackPanel>
+                </Border>
 
-            <ui:Card Padding="20">
-                <StackPanel>
-                    <TextBlock Text="Database SQLite"
-                               FontSize="18"
-                               FontWeight="SemiBold"
-                               Margin="0,0,0,12" />
+                <ListBox x:Name="MenuList"
+                         ItemsSource="{Binding MenuItems}"
+                         SelectionChanged="OnMenuSelectionChanged"
+                         Background="Transparent"
+                         BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="{Binding Icon}" Margin="0,0,10,0" />
+                                <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
 
-                    <TextBlock Text="{Binding StatusMessage}" Margin="0,0,0,8" />
-
-                    <TextBlock Text="{Binding DatabasePath}"
-                               Opacity="0.7"
-                               TextWrapping="Wrap" />
-                </StackPanel>
-            </ui:Card>
-        </StackPanel>
+            <ContentControl x:Name="PageContent" Grid.Column="1" Margin="8,0,16,16" />
+        </Grid>
     </Grid>
 </ui:FluentWindow>

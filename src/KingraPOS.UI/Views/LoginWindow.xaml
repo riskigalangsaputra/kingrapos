@@ -1,0 +1,57 @@
+<ui:FluentWindow x:Class="KingraPOS.UI.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        mc:Ignorable="d"
+        Title="Masuk — Kingra POS"
+        Width="440" Height="420"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
+        WindowCornerPreference="Round">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="Kingra POS" />
+
+        <StackPanel Grid.Row="1" Margin="32,8,32,24" VerticalAlignment="Center">
+            <TextBlock Text="KingraPOS"
+                       FontSize="26"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Center" />
+
+            <TextBlock Text="Masuk untuk melanjutkan"
+                       Opacity="0.7"
+                       HorizontalAlignment="Center"
+                       Margin="0,4,0,24" />
+
+            <TextBlock Text="Username" />
+            <ui:TextBox x:Name="UsernameInput"
+                        Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
+                        Margin="0,4,0,12" />
+
+            <TextBlock Text="Password" />
+            <PasswordBox x:Name="PasswordInput"
+                         PasswordChanged="OnPasswordChanged"
+                         Margin="0,4,0,16" />
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                       Foreground="#FF7B7B"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,12" />
+
+            <ui:Button Content="Masuk"
+                       Appearance="Primary"
+                       Padding="0,10"
+                       HorizontalAlignment="Stretch"
+                       Command="{Binding LoginCommand}"
+                       IsEnabled="{Binding CanSubmit}" />
+        </StackPanel>
+    </Grid>
+</ui:FluentWindow>

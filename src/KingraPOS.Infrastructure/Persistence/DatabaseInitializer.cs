@@ -1,6 +1,6 @@
 using System.Data.Common;
 using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 
 namespace KingraPOS.Infrastructure.Persistence;
 
@@ -14,14 +14,15 @@ public sealed class DatabaseInitializer
     private static readonly Regex PragmaStatementPattern =
         new(@"(?im)^[ \t]*PRAGMA\b[^;]*;", RegexOptions.Compiled);
 
-    private readonly KingraPosDbContext _context;
     private readonly string _databasePath;
 
-    public DatabaseInitializer(KingraPosDbContext context, string databasePath)
+    public DatabaseInitializer(string databasePath)
     {
-        _context = context;
         _databasePath = databasePath;
     }
+
+    public static DatabaseInitializationResult Initialize(string databasePath) =>
+        new DatabaseInitializer(databasePath).Ensure();
 
     public DatabaseInitializationResult Ensure()
     {
@@ -29,33 +30,26 @@ public sealed class DatabaseInitializer
         if (!string.IsNullOrEmpty(directory))
             Directory.CreateDirectory(directory);
 
-        var connection = _context.Database.GetDbConnection();
+        using var connection = new SqliteConnection(KingraPosDatabase.BuildConnectionString(_databasePath));
         connection.Open();
 
-        try
+        Execute(connection, "PRAGMA journal_mode = WAL;");
+        Execute(connection, "PRAGMA foreign_keys = ON;");
+        Execute(connection, "PRAGMA busy_timeout = 5000;");
+
+        var created = false;
+
+        if (GetUserVersion(connection) < CurrentSchemaVersion)
         {
-            Execute(connection, "PRAGMA journal_mode = WAL;");
-            Execute(connection, "PRAGMA foreign_keys = ON;");
-            Execute(connection, "PRAGMA busy_timeout = 5000;");
-
-            var created = false;
-
-            if (GetUserVersion(connection) < CurrentSchemaVersion)
-            {
-                CreateSchema(connection);
-                created = true;
-            }
-
-            return new DatabaseInitializationResult(
-                _databasePath,
-                CurrentSchemaVersion,
-                CountTables(connection),
-                created);
+            CreateSchema(connection);
+            created = true;
         }
-        finally
-        {
-            connection.Close();
-        }
+
+        return new DatabaseInitializationResult(
+            _databasePath,
+            CurrentSchemaVersion,
+            CountTables(connection),
+            created);
     }
 
     private static void CreateSchema(DbConnection connection)
@@ -65,16 +59,17 @@ public sealed class DatabaseInitializer
             StripPragmaStatements(ReadScript(SchemaScriptResource)),
             StripPragmaStatements(ReadScript(TriggersScriptResource)));
 
-        using var transaction = connection.BeginTransaction();
-
-        using (var command = connection.CreateCommand())
+        using (var transaction = connection.BeginTransaction())
         {
-            command.Transaction = transaction;
-            command.CommandText = script;
-            command.ExecuteNonQuery();
-        }
+            using (var command = connection.CreateCommand())
+            {
+                command.Transaction = transaction;
+                command.CommandText = script;
+                command.ExecuteNonQuery();
+            }
 
-        transaction.Commit();
+            transaction.Commit();
+        }
 
         Execute(connection, $"PRAGMA user_version = {CurrentSchemaVersion};");
     }

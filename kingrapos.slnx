@@ -1,5 +1,9 @@
 <Solution>
   <Project Path="src/KingraPOS.Domain/KingraPOS.Domain.csproj" />
+  <Folder Name="/src/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/KingraPOS.Tests/KingraPOS.Tests.csproj" />
+  </Folder>
   <Project Path="src/KingraPOS.Application/KingraPOS.Application.csproj" />
   <Project Path="src/KingraPOS.Infrastructure/KingraPOS.Infrastructure.csproj" />
   <Project Path="src/KingraPOS.UI/KingraPOS.UI.csproj" />
