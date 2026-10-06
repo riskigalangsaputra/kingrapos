@@ -1,3 +1,4 @@
+using System.Windows;
 using System.Windows.Controls;
 using KingraPOS.UI.Common;
 using KingraPOS.UI.Services;
@@ -22,6 +23,11 @@ public partial class MainWindow : FluentWindow
         _navigationService.CurrentPageChanged += OnCurrentPageChanged;
 
         NavigateToFirstPage();
+    }
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        await _viewModel.InitializeAsync();
     }
 
     private void NavigateToFirstPage()

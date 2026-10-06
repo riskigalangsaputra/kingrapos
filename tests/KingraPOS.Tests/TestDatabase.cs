@@ -20,6 +20,7 @@ internal sealed class TestDatabase : IDisposable
         DatabaseInitializer.Initialize(DatabasePath);
 
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddApplication();
         services.AddInfrastructure(DatabasePath);
 

@@ -11,16 +11,31 @@
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
-        WindowCornerPreference="Round">
+        WindowCornerPreference="Round"
+        Loaded="OnLoaded">
+    <ui:FluentWindow.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </ui:FluentWindow.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <ui:TitleBar Grid.Row="0" Title="Kingra POS" />
 
-        <Grid Grid.Row="1">
+        <Border Grid.Row="1"
+                Margin="8,0,8,8"
+                Padding="16,10"
+                CornerRadius="6"
+                Background="#5A4410"
+                Visibility="{Binding IsLicenseBannerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Text="{Binding LicenseBannerMessage}" TextWrapping="Wrap" />
+        </Border>
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="248" />
                 <ColumnDefinition Width="*" />

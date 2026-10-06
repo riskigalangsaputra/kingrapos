@@ -20,10 +20,16 @@ public static class ApplicationServiceCollectionExtensions
         services.AddSingleton<ISetupService, SetupService>();
         services.AddSingleton<IAuthenticationService, AuthenticationService>();
         services.AddSingleton<IUserManagementService, UserManagementService>();
+        services.AddSingleton<ILicenseService, LicenseService>();
+        services.AddSingleton<IRoleManagementService, RoleManagementService>();
+        services.AddSingleton<IBackupService, BackupService>();
+        services.AddSingleton<IRestoreService, RestoreService>();
 
         services.AddTransient<IValidator<SetupRequest>, SetupRequestValidator>();
         services.AddTransient<IValidator<LoginRequest>, LoginRequestValidator>();
         services.AddTransient<IValidator<CreateUserRequest>, CreateUserRequestValidator>();
+        services.AddTransient<IValidator<LicenseActivationRequest>, LicenseActivationRequestValidator>();
+        services.AddTransient<IValidator<BackupScheduleRequest>, BackupScheduleRequestValidator>();
 
         return services;
     }

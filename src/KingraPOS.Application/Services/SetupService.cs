@@ -16,17 +16,20 @@ public sealed class SetupService : ISetupService
     private readonly IKingraPosDbContextFactory _contextFactory;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IActivityLogService _activityLogService;
+    private readonly IDeviceFingerprintProvider _deviceFingerprintProvider;
     private readonly IClock _clock;
 
     public SetupService(
         IKingraPosDbContextFactory contextFactory,
         IPasswordHasher passwordHasher,
         IActivityLogService activityLogService,
+        IDeviceFingerprintProvider deviceFingerprintProvider,
         IClock clock)
     {
         _contextFactory = contextFactory;
         _passwordHasher = passwordHasher;
         _activityLogService = activityLogService;
+        _deviceFingerprintProvider = deviceFingerprintProvider;
         _clock = clock;
     }
 
@@ -141,6 +144,9 @@ public sealed class SetupService : ISetupService
             Id = MainRowId,
             Edition = "OFFLINE",
             Status = LicenseStatus.TRIAL,
+            ActivatedAt = now,
+            ExpiresAt = now.AddDays(LicensePolicy.TrialDays),
+            DeviceFingerprint = _deviceFingerprintProvider.GetFingerprint(),
             CreatedAt = now,
             UpdatedAt = now
         });

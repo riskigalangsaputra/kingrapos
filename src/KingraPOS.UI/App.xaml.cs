@@ -115,12 +115,18 @@ public partial class App : System.Windows.Application
         builder.Services.AddTransient<MainShellViewModel>();
         builder.Services.AddTransient<DashboardViewModel>();
         builder.Services.AddTransient<UsersViewModel>();
+        builder.Services.AddTransient<LicenseViewModel>();
+        builder.Services.AddTransient<BackupViewModel>();
+        builder.Services.AddTransient<PermissionsViewModel>();
 
         builder.Services.AddTransient<SetupWindow>();
         builder.Services.AddTransient<LoginWindow>();
         builder.Services.AddTransient<MainWindow>();
         builder.Services.AddTransient<DashboardPage>();
         builder.Services.AddTransient<UsersPage>();
+        builder.Services.AddTransient<LicensePage>();
+        builder.Services.AddTransient<BackupPage>();
+        builder.Services.AddTransient<PermissionsPage>();
     }
 
     private async Task RunStartupFlowAsync()

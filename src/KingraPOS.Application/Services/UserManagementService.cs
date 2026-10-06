@@ -15,6 +15,7 @@ public sealed class UserManagementService : IUserManagementService
     private readonly IPermissionService _permissionService;
     private readonly ICurrentUserSession _session;
     private readonly IActivityLogService _activityLogService;
+    private readonly ILicenseService _licenseService;
     private readonly IClock _clock;
 
     public UserManagementService(
@@ -23,6 +24,7 @@ public sealed class UserManagementService : IUserManagementService
         IPermissionService permissionService,
         ICurrentUserSession session,
         IActivityLogService activityLogService,
+        ILicenseService licenseService,
         IClock clock)
     {
         _contextFactory = contextFactory;
@@ -30,6 +32,7 @@ public sealed class UserManagementService : IUserManagementService
         _permissionService = permissionService;
         _session = session;
         _activityLogService = activityLogService;
+        _licenseService = licenseService;
         _clock = clock;
     }
 
@@ -70,6 +73,7 @@ public sealed class UserManagementService : IUserManagementService
     public async Task<UserDto> CreateUserAsync(CreateUserRequest request, CancellationToken cancellationToken = default)
     {
         EnsurePermission(PermissionCatalog.UserManage);
+        await _licenseService.EnsureWriteAllowedAsync(cancellationToken);
 
         using var context = _contextFactory.Create();
 
@@ -116,6 +120,7 @@ public sealed class UserManagementService : IUserManagementService
     public async Task SetUserActiveAsync(string userId, bool isActive, CancellationToken cancellationToken = default)
     {
         EnsurePermission(PermissionCatalog.UserManage);
+        await _licenseService.EnsureWriteAllowedAsync(cancellationToken);
 
         using var context = _contextFactory.Create();
 

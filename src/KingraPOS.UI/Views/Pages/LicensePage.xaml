@@ -1,0 +1,84 @@
+<UserControl x:Class="KingraPOS.UI.Views.Pages.LicensePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d"
+             Loaded="OnLoaded">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <TextBlock Text="Lisensi" FontSize="24" FontWeight="SemiBold" Margin="0,4,0,16" />
+
+            <ui:Card Padding="20" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Status Lisensi" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Status" Opacity="0.7" Margin="0,0,0,6" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding StatusText}" FontWeight="SemiBold" Margin="0,0,0,6" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Akses" Opacity="0.7" Margin="0,0,0,6" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AccessText}" TextWrapping="Wrap" Margin="0,0,0,6" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Terdaftar untuk" Opacity="0.7" Margin="0,0,0,6" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LicensedToText}" Margin="0,0,0,6" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Kunci" Opacity="0.7" Margin="0,0,0,6" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding KeyText}" Margin="0,0,0,6" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Aktivasi / Kedaluwarsa" Opacity="0.7" Margin="0,0,0,6" />
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ActivatedText}" Margin="0,0,0,6" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Berlaku sampai" Opacity="0.7" />
+                        <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ExpiresText}" />
+                    </Grid>
+
+                    <TextBlock Text="{Binding DeviceText, StringFormat='Perangkat: {0}'}"
+                               Opacity="0.5"
+                               FontSize="12"
+                               Margin="0,12,0,0" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="20" IsEnabled="{Binding CanActivate}">
+                <StackPanel>
+                    <TextBlock Text="Aktivasi Lisensi" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                    <TextBlock Text="Kunci lisensi *" />
+                    <ui:TextBox Text="{Binding LicenseKeyInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+
+                    <TextBlock Text="Terdaftar untuk" />
+                    <ui:TextBox Text="{Binding LicensedToInput}" Margin="0,4,0,12" />
+
+                    <TextBlock Text="Berlaku sampai (kosongkan untuk selamanya)" />
+                    <DatePicker SelectedDate="{Binding ExpiresAtInput}" Margin="0,4,0,16" />
+
+                    <ui:Button Content="Aktifkan Lisensi"
+                               Appearance="Primary"
+                               HorizontalAlignment="Left"
+                               Padding="20,10"
+                               Command="{Binding ActivateCommand}" />
+
+                    <TextBlock Text="{Binding Message}"
+                               TextWrapping="Wrap"
+                               Foreground="#8ED08E"
+                               Margin="0,12,0,0" />
+                </StackPanel>
+            </ui:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

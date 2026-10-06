@@ -1,12 +1,13 @@
 using System.Data.Common;
 using System.Text.RegularExpressions;
+using KingraPOS.Application.Persistence;
 using Microsoft.Data.Sqlite;
 
 namespace KingraPOS.Infrastructure.Persistence;
 
 public sealed class DatabaseInitializer
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = DatabaseSchema.CurrentVersion;
 
     private const string SchemaScriptResource = "KingraPOS.Infrastructure.Persistence.Scripts.schema.sql";
     private const string TriggersScriptResource = "KingraPOS.Infrastructure.Persistence.Scripts.triggers.sql";
