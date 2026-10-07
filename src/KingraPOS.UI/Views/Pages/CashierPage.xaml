@@ -1,0 +1,270 @@
+<UserControl x:Class="KingraPOS.UI.Views.Pages.CashierPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d"
+             Loaded="OnLoaded">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <Grid Margin="0,4,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Kasir" FontSize="24" FontWeight="SemiBold" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center">
+                    <Run Text="Status shift:" />
+                    <Run Text="{Binding HasOpenShift, Mode=OneWay}" />
+                </TextBlock>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="380" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                    <ui:Card Padding="20" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="Cari Produk" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ui:TextBox Grid.Column="0"
+                                            PlaceholderText="Nama, SKU, atau barcode..."
+                                            Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}"
+                                            Margin="0,0,12,0" />
+                                <ui:Button Grid.Column="1" Content="Cari" Appearance="Primary" Command="{Binding SearchCommand}" />
+                            </Grid>
+
+                            <DataGrid ItemsSource="{Binding SearchResults}"
+                                      SelectedItem="{Binding SelectedProduct}"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True"
+                                      CanUserAddRows="False"
+                                      HeadersVisibility="Column"
+                                      GridLinesVisibility="Horizontal"
+                                      MaxHeight="180"
+                                      Margin="0,12,0,0">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="110" />
+                                    <DataGridTextColumn Header="Produk" Binding="{Binding Name}" Width="*" />
+                                    <DataGridTextColumn Header="Satuan" Binding="{Binding BaseUnitName}" Width="80" />
+                                    <DataGridTextColumn Header="Harga" Binding="{Binding BaseCostPrice, StringFormat='{}{0:N0}'}" Width="90" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <Grid Margin="0,12,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox Grid.Column="0"
+                                          ItemsSource="{Binding Units}"
+                                          SelectedItem="{Binding SelectedUnit}"
+                                          DisplayMemberPath="UnitName"
+                                          Margin="0,0,12,0" />
+                                <ui:TextBox Grid.Column="1" Text="{Binding Quantity}" Margin="0,0,12,0" />
+                                <ui:Button Grid.Column="2" Content="Tambah" Appearance="Primary" Command="{Binding AddLineCommand}" />
+                            </Grid>
+                        </StackPanel>
+                    </ui:Card>
+
+                    <ui:Card Padding="20" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="Keranjang" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <DataGrid ItemsSource="{Binding Cart}"
+                                      SelectedItem="{Binding SelectedLine}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      HeadersVisibility="Column"
+                                      GridLinesVisibility="Horizontal"
+                                      MaxHeight="240">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Produk" Binding="{Binding ProductName}" Width="*" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Satuan" Binding="{Binding UnitName}" Width="80" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Harga" Binding="{Binding UnitPrice, StringFormat='{}{0:N0}'}" Width="100" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="70" />
+                                    <DataGridTextColumn Header="Diskon" Binding="{Binding DiscountAmount}" Width="90" />
+                                    <DataGridTextColumn Header="Subtotal" Binding="{Binding Subtotal, StringFormat='{}{0:N0}'}" Width="110" IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                <ui:Button Content="Hitung Total" Command="{Binding RecalculateCommand}" Margin="0,0,12,0" />
+                                <ui:Button Content="Hapus Baris" Command="{Binding RemoveLineCommand}" Margin="0,0,12,0" />
+                                <ui:Button Content="Kosongkan" Command="{Binding ClearCartCommand}" Margin="0,0,12,0" />
+                                <ui:Button Content="Tahan" Command="{Binding HoldCartCommand}" />
+                            </StackPanel>
+
+                            <Grid Margin="0,12,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox Grid.Column="0"
+                                          ItemsSource="{Binding HeldCarts}"
+                                          SelectedItem="{Binding SelectedHeld}"
+                                          DisplayMemberPath="Label"
+                                          Margin="0,0,12,0" />
+                                <ui:Button Grid.Column="1" Content="Lanjutkan" Command="{Binding ResumeCartCommand}" />
+                            </Grid>
+                        </StackPanel>
+                    </ui:Card>
+
+                    <ui:Card Padding="20" Margin="0,0,0,12" Visibility="{Binding CanViewHistory, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Text="Riwayat Transaksi" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <DataGrid ItemsSource="{Binding History}"
+                                      SelectedItem="{Binding SelectedTransaction}"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True"
+                                      CanUserAddRows="False"
+                                      HeadersVisibility="Column"
+                                      GridLinesVisibility="Horizontal"
+                                      MaxHeight="220">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Invoice" Binding="{Binding InvoiceNumber}" Width="180" />
+                                    <DataGridTextColumn Header="Waktu" Binding="{Binding CreatedAt, StringFormat='dd MMM HH:mm'}" Width="110" />
+                                    <DataGridTextColumn Header="Kasir" Binding="{Binding UserName}" Width="*" />
+                                    <DataGridTextColumn Header="Total" Binding="{Binding TotalNetAmount, StringFormat='{}{0:N0}'}" Width="110" />
+                                    <DataGridTextColumn Header="Bayar" Binding="{Binding PaymentMethod}" Width="90" />
+                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0"
+                                        IsEnabled="{Binding CanVoid}">
+                                <ui:TextBox Text="{Binding VoidReason}"
+                                            PlaceholderText="Alasan pembatalan"
+                                            Width="320"
+                                            Margin="0,0,12,0" />
+                                <ui:Button Content="Batalkan Transaksi" Command="{Binding VoidCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </ui:Card>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1">
+                    <ui:Card Padding="20" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="Pembayaran" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Total barang" />
+                                <TextBlock Grid.Column="1" Text="{Binding Quote.ItemsAmount, StringFormat='{}{0:N0}'}" />
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Total jasa" />
+                                <TextBlock Grid.Column="1" Text="{Binding Quote.ServiceAmount, StringFormat='{}{0:N0}'}" />
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Diskon transaksi" />
+                                <TextBlock Grid.Column="1" Text="{Binding Quote.DiscountAmount, StringFormat='-{0:N0}'}" />
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0">
+                                    <Run Text="{Binding Quote.TaxName, Mode=OneWay}" />
+                                    <Run Text="{Binding Quote.TaxRate, Mode=OneWay, StringFormat=' {0:0.##}%'}" />
+                                </TextBlock>
+                                <TextBlock Grid.Column="1" Text="{Binding Quote.TaxAmount, StringFormat='{}{0:N0}'}" />
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Pembulatan" />
+                                <TextBlock Grid.Column="1" Text="{Binding Quote.RoundingAmount, StringFormat='{}{0:N0}'}" />
+                            </Grid>
+                            <Separator Margin="0,8" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="TOTAL" FontWeight="SemiBold" FontSize="16" />
+                                <TextBlock Grid.Column="1" Text="{Binding Quote.TotalNetAmount, StringFormat='{}{0:N0}'}" FontWeight="SemiBold" FontSize="16" />
+                            </Grid>
+
+                            <TextBlock Text="Metode pembayaran" Margin="0,12,0,0" />
+                            <ComboBox ItemsSource="{Binding PaymentMethods}"
+                                      SelectedItem="{Binding SelectedPaymentMethod}"
+                                      DisplayMemberPath="Name"
+                                      Margin="0,4,0,12" />
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                    <TextBlock Text="Provider (opsional)" />
+                                    <ui:TextBox Text="{Binding PaymentProvider}" Margin="0,4,0,0" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="No. referensi (opsional)" />
+                                    <ui:TextBox Text="{Binding PaymentReference}" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="Uang bayar" Margin="0,12,0,0" />
+                            <ui:TextBox Text="{Binding AmountPaid}" Margin="0,4,0,12" />
+
+                            <TextBlock Text="Diskon transaksi (butuh izin)" />
+                            <ui:TextBox Text="{Binding TransactionDiscountAmount}" Margin="0,4,0,12" />
+
+                            <TextBlock Text="Catatan (opsional)" />
+                            <ui:TextBox Text="{Binding Notes}" Margin="0,4,0,12" />
+
+                            <ui:Button Content="Bayar &amp; Simpan" Appearance="Primary"
+                                       Command="{Binding CheckoutCommand}" Margin="0,0,0,8" />
+                            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Foreground="#E0A030" />
+                        </StackPanel>
+                    </ui:Card>
+
+                    <ui:Card Padding="20">
+                        <StackPanel>
+                            <TextBlock Text="Struk" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <TextBox Text="{Binding ReceiptText}"
+                                     IsReadOnly="True"
+                                     AcceptsReturn="True"
+                                     TextWrapping="NoWrap"
+                                     FontFamily="Consolas"
+                                     Height="240"
+                                     VerticalScrollBarVisibility="Auto"
+                                     HorizontalScrollBarVisibility="Auto" />
+                            <ui:Button Content="Cetak Struk" Command="{Binding PrintReceiptCommand}" Margin="0,12,0,0" />
+                        </StackPanel>
+                    </ui:Card>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

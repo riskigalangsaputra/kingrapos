@@ -29,6 +29,8 @@ public static class ApplicationServiceCollectionExtensions
         services.AddSingleton<ISupplierService, SupplierService>();
         services.AddSingleton<IProductService, ProductService>();
         services.AddSingleton<IStockService, StockService>();
+        services.AddSingleton<IShiftService, ShiftService>();
+        services.AddSingleton<ITransactionService, TransactionService>();
 
         services.AddTransient<IValidator<SetupRequest>, SetupRequestValidator>();
         services.AddTransient<IValidator<LoginRequest>, LoginRequestValidator>();
@@ -44,6 +46,11 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<IValidator<ProductUnitRequest>, ProductUnitRequestValidator>();
         services.AddTransient<IValidator<IReadOnlyCollection<ProductPriceTierRequest>>, ProductPriceTierListValidator>();
         services.AddTransient<IValidator<StockAdjustmentRequest>, StockAdjustmentRequestValidator>();
+        services.AddTransient<IValidator<OpenShiftRequest>, OpenShiftRequestValidator>();
+        services.AddTransient<IValidator<CloseShiftRequest>, CloseShiftRequestValidator>();
+        services.AddTransient<IValidator<SwitchShiftRequest>, SwitchShiftRequestValidator>();
+        services.AddTransient<IValidator<CheckoutRequest>, CheckoutRequestValidator>();
+        services.AddTransient<IValidator<VoidTransactionRequest>, VoidTransactionRequestValidator>();
 
         return services;
     }

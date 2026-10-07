@@ -111,6 +111,7 @@ public partial class App : System.Windows.Application
         builder.Services.AddInfrastructure(databasePath);
 
         builder.Services.AddSingleton<INavigationService, NavigationService>();
+        builder.Services.AddSingleton<IReceiptPrinterService, ReceiptPrinterService>();
 
         builder.Services.AddTransient<SetupViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
@@ -126,6 +127,8 @@ public partial class App : System.Windows.Application
         builder.Services.AddTransient<ProductsViewModel>();
         builder.Services.AddTransient<StockViewModel>();
         builder.Services.AddTransient<RejectsViewModel>();
+        builder.Services.AddTransient<CashierViewModel>();
+        builder.Services.AddTransient<ShiftViewModel>();
 
         builder.Services.AddTransient<SetupWindow>();
         builder.Services.AddTransient<LoginWindow>();
@@ -141,6 +144,8 @@ public partial class App : System.Windows.Application
         builder.Services.AddTransient<ProductsPage>();
         builder.Services.AddTransient<StockPage>();
         builder.Services.AddTransient<RejectsPage>();
+        builder.Services.AddTransient<CashierPage>();
+        builder.Services.AddTransient<ShiftPage>();
     }
 
     private async Task RefreshProductBadgesAsync()

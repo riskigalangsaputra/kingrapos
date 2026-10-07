@@ -59,6 +59,8 @@ public partial class MainShellViewModel : ObservableObject
         var candidates = new List<NavigationItem>
         {
             new("Beranda", SymbolRegular.Home24, typeof(DashboardPage), null),
+            new("Kasir", SymbolRegular.Cart24, typeof(CashierPage), PermissionCatalog.SalesCreate),
+            new("Shift", SymbolRegular.Clock24, typeof(ShiftPage), PermissionCatalog.ShiftOpen),
             new("Kategori", SymbolRegular.Tag24, typeof(CategoriesPage), PermissionCatalog.CategoryManage),
             new("Satuan", SymbolRegular.Ruler24, typeof(UnitsPage), PermissionCatalog.CategoryManage),
             new("Produk", SymbolRegular.BoxMultiple24, typeof(ProductsPage), PermissionCatalog.ProductView),
