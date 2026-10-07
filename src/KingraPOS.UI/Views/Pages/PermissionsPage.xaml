@@ -86,7 +86,7 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Modul" Binding="{Binding Module}" Width="120" IsReadOnly="True" />
                             <DataGridTextColumn Header="Izin" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
-                            <DataGridCheckBoxColumn Header="Efektif" Binding="{Binding IsEffective}" Width="80" IsReadOnly="True" />
+                            <DataGridCheckBoxColumn Header="Efektif" Binding="{Binding IsEffective, Mode=OneWay}" Width="80" IsReadOnly="True" />
                             <DataGridTemplateColumn Header="Pengecualian" Width="160">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
